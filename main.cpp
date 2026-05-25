@@ -70,59 +70,61 @@ int main()
     oyuncu karakter(50.0f, 300.0f);
     sf::RectangleShape zeminsekli(sf::Vector2f(TILE_SIZE, TILE_SIZE));
     while (pencere.isOpen()) {
-        float dt = saat.restart().asSeconds;
+        float dt = saat.restart().asSeconds();
         sf::Event olay;
         while (pencere.pollEvent(olay)) {
-            if (olay.type == sf::Event::Closed)pencere.close();
+            if (olay.type == sf::Event::Closed)pencere.close(); {
+            }
+            karakter.guncelle(dt);
+            karakter.sinirlar.left += karakter.hizX * dt;
+            for (int y = 0;y < MAP_HEIGHT;y++) {
+                for (int x = 0;x < MAP_WIDTH;x++) {
+                    if (seviyeharitasi[y][x] == 1) {
+                        sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                        if (karakter.sinirlar.intersects(bloksiniri)) {
+                            if (karakter.hizX > 0)karakter.sinirlar.left = bloksiniri.left - karakter.sinirlar.width;
+                            else if (karakter.hizX < 0)karakter.sinirlar.left + bloksiniri.width;
+                            karakter.hizX = 0;
+                        }
+                    }
+                }
+            }
         }
-        karakter.guncelle(dt);
-        karakter.sinirlar.left += karakter.hizX * dt;
+        karakter.sinirlar.top += karakter.hizY * dt;
+        karakter.yerdemi = false;
+
         for (int y = 0;y < MAP_HEIGHT;y++) {
-            if (seviyeharitasi[y][x] == 1) {
-                sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                if (karakter.sinirlar.intersects(bloksiniri)) {
-                    if (karakter.hizX > 0)karakter.sinirlar.left = bloksiniri.left - karakter.sinirlar.width;
-                    else if (karakter.hizX < 0)karakter.sinirlar.left + bloksiniri + width;
-                    karakter.hizX = 0;
+            for (int x = 0;x < MAP_WIDTH;x++) {
+                if (seviyeharitasi[y][x] == 1) {
+                    sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    if (karakter.sinirlar.intersects(bloksiniri)) {
+                        if (karakter.hizY > 0) {
+                            karakter.sinirlar.top = bloksiniri.top - karakter.sinirlar.height;
+                            karakter.yerdemi = true;
+                        }
+                        else if (karakter.hizY < 0) {
+                            karakter.sinirlar.top = bloksiniri.top + bloksiniri.height;
+                        }
+                        karakter.hizY = 0;
+                    }
                 }
             }
         }
-    }
-    karakter.sinirlar.top += karakter.hizY * dt;
-    karakter.yerdemi = false;
+        karakter.sekil.setPosition(karakter.sinirlar.left, karakter.sinirlar.top);
+        pencere.clear(sf::Color(135, 206, 235));//gokyuzu mavisi
 
-    for (int y = 0;y < MAP_HEIGHT;y++) {
-        for (int x = 0;x < MAP_WIDTH;x++) {
-            if (seviyeharitasi[y][x] == ) {
-                sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                if (karakter.sinirlar.intersects(bloksiniri)) {
-                    if (karakter.hizY > 0) {
-                        karakter.sinirlar.top = bloksiniri.top - karakter.sinirlar.height;
-                        karakter.yerdemi = true;
-                    }
-                    else if (karakter.hizY < 0) {
-                        karakter.sinirlar.top = bloksiniri.top + bloksiniri.height;
-                    }
-                    karakter.hizY = 0;
+        for (int y = 0;y < MAP_HEIGHT; y++) {
+            for (int x = 0;x < MAP_WIDTH; x++) {
+                if (seviyeharitasi[y][x] == 1) {
+                    zeminsekli.setFillColor(sf::Color(255, 165, 0));//turuncu zemin
+                    zeminsekli.setPosition(x * TILE_SIZE, y * TILE_SIZE);
+                    pencere.draw(zeminsekli);
                 }
             }
         }
-    }
-    karakter.sekil.setPosition(karakter.sinirlar.left, karakter.sinirlar.top);
-    pencere.clear(sf::Color(135, 206, 235);//gokyuzu mavisi
+        pencere.draw(karakter.sekil);
+        pencere.display();
 
-    for (int y = 0;y < MAP_HEIGHT; y++) {
-        for (int x = 0;x < MAP_WIDTH; x++) {
-            if (seviyeharitasi[y][x] == 1) {
-                zeminsekli.setFillColor(sf::Color(255, 165, 0));//turuncu zemin
-                zeminsekli.setPosition(x * TILE_SIZE, y * TILE_SIZE);
-                pencere.draw(zeminsekli);
-            }
-        }
     }
-    pencere.draw(karakter.sekil);
-    pencere.display();
-
     return 0;
-
 }
