@@ -73,19 +73,23 @@ int main()
         float dt = saat.restart().asSeconds();
         sf::Event olay;
         while (pencere.pollEvent(olay)) {
-            if (olay.type == sf::Event::Closed)pencere.close(); {
+            if (olay.type == sf::Event::Closed) {
+                pencere.close();
             }
-            karakter.guncelle(dt);
-            karakter.sinirlar.left += karakter.hizX * dt;
-            for (int y = 0;y < MAP_HEIGHT;y++) {
-                for (int x = 0;x < MAP_WIDTH;x++) {
-                    if (seviyeharitasi[y][x] == 1) {
-                        sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                        if (karakter.sinirlar.intersects(bloksiniri)) {
-                            if (karakter.hizX > 0)karakter.sinirlar.left = bloksiniri.left - karakter.sinirlar.width;
-                            else if (karakter.hizX < 0)karakter.sinirlar.left + bloksiniri.width;
-                            karakter.hizX = 0;
+        }
+        karakter.guncelle(dt);
+        karakter.sinirlar.left += karakter.hizX * dt;
+        for (int y = 0;y < MAP_HEIGHT;y++) {
+            for (int x = 0;x < MAP_WIDTH;x++) {
+                if (seviyeharitasi[y][x] == 1) {
+                    sf::FloatRect bloksiniri(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    if (karakter.sinirlar.intersects(bloksiniri)) {
+                        if (karakter.hizX > 0) {
+                            karakter.sinirlar.left = bloksiniri.left - karakter.sinirlar.width;
+                        }else if (karakter.hizX < 0) {
+                            karakter.sinirlar.left = bloksiniri.left + bloksiniri.width;
                         }
+                        karakter.hizX = 0;
                     }
                 }
             }
@@ -124,7 +128,7 @@ int main()
         }
         pencere.draw(karakter.sekil);
         pencere.display();
-
     }
     return 0;
 }
+  
