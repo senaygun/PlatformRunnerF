@@ -28,7 +28,12 @@ int seviyeharitasi[MAP_HEIGHT][MAP_WIDTH] = {
 class oyuncu {
 public:
     sf::FloatRect sinirlar;
-    sf::RectangleShape sekil;
+    sf::Texture doku;
+    sf::Sprite sprite;
+    bool gorselYuklendiMi = false;
+    float zamanlayici = 0.0f;
+    int mevcutKare = 0;
+    bool sagabakiyor = true;
 
     float hizX = 0.0f;
     float hizY = 0.0f;
@@ -40,8 +45,15 @@ public:
     oyuncu(float baslangicX, float baslangicY) {
         sinirlar = sf::FloatRect(baslangicX, baslangicY, 30.0f, 30.0f);
 
-        sekil.setSize(sf::Vector2f(30.0f, 30.0f));
-        sekil.setFillColor(sf::Color::Blue);
+        if (doku.loadFromFile("player.png")) {
+            gorselYuklendiMi = true;
+            sprite.setTexture(doku);
+            sprite.setTextureRect(sf::IntRect(0, 0, 525, 350));
+        }
+        else {
+            std::cout << "ERROR: player.png bulunamadi!!!!!!!!" << std::endl;
+
+        }
     }
 
     void guncelle(float dt) {
@@ -49,9 +61,11 @@ public:
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             hizX = harekethizi;
+            sagabakiyor = true;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             hizX = -harekethizi;
+            sagabakiyor = false;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && yerdemi) {
@@ -60,6 +74,26 @@ public:
         }
 
         hizY += yercekimi * dt;
+        if (gorselYuklendiMi) {
+            zamanlayici += dt;
+            if (hizX != 0.0f) {
+                if (zamanlayici > 0.1f) {
+                    mevcutKare = (mevcutKare + 1) % 4;
+                    sprite.setTextureRect(sf::IntRect(mevcutKare * 525, 0, 525, 350));
+                    zamanlayici = 0.0f;
+                }
+            }
+            else {
+                sprite.setTextureRect(sf::IntRect(0, 0, 525, 350));
+            }
+        }if (!sagabakiyor) {
+            sprite.setScale(-1.0f, 1.0f);
+            sprite.setOrigin(32.0f, 0.0f);
+        }
+        else {
+            sprite.setScale(1.0f, 1.0f);
+            sprite.setOrigin(0.0f, 0.0f);
+        }
     }
 };
 int main()
@@ -114,7 +148,6 @@ int main()
                 }
             }
         }
-        karakter.sekil.setPosition(karakter.sinirlar.left, karakter.sinirlar.top);
         pencere.clear(sf::Color(135, 206, 235));//gokyuzu mavisi
 
         for (int y = 0;y < MAP_HEIGHT; y++) {
@@ -126,7 +159,10 @@ int main()
                 }
             }
         }
-        pencere.draw(karakter.sekil);
+        if (karakter.gorselYuklendiMi) {
+            karakter.sprite.setPosition(karakter.sinirlar.left, karakter.sinirlar.top);
+            pencere.draw(karakter.sprite);
+        }
         pencere.display();
     }
     return 0;
