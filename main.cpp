@@ -48,7 +48,7 @@ public:
         if (doku.loadFromFile("player.png")) {
             gorselYuklendiMi = true;
             sprite.setTexture(doku);
-            sprite.setTextureRect(sf::IntRect(0, 0, 525, 350));
+            sprite.setTextureRect(sf::IntRect(0, 0,32, 32));
         }
         else {
             std::cout << "ERROR: player.png bulunamadi!!!!!!!!" << std::endl;
@@ -79,12 +79,12 @@ public:
             if (hizX != 0.0f) {
                 if (zamanlayici > 0.1f) {
                     mevcutKare = (mevcutKare + 1) % 4;
-                    sprite.setTextureRect(sf::IntRect(mevcutKare * 525, 0, 525, 350));
+                    sprite.setTextureRect(sf::IntRect(mevcutKare * 32, 0,32, 32));
                     zamanlayici = 0.0f;
                 }
             }
             else {
-                sprite.setTextureRect(sf::IntRect(0, 0, 525, 350));
+                sprite.setTextureRect(sf::IntRect(0, 0, 32, 32));
             }
         }if (!sagabakiyor) {
             sprite.setScale(-1.0f, 1.0f);
