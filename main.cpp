@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <iostream>
 #include <string>
@@ -226,6 +227,25 @@ int main()
         std::cout << "!background.png BULUNAMADI!" << std::endl;
     }
 
+    sf::SoundBuffer altinBuffer;
+    sf::Sound altinSesi;
+    if (altinBuffer.loadFromFile("pickupCoin.wav")) {
+        altinSesi.setBuffer(altinBuffer);
+    }
+
+    sf::SoundBuffer levelBuffer;
+    sf::Sound levelSesi;
+    if (levelBuffer.loadFromFile("twoTone2.ogg")) {
+        levelSesi.setBuffer(levelBuffer);
+    }
+
+    sf::Music arkaPlanMuzigi;
+    if (arkaPlanMuzigi.openFromFile("music.wav")) {
+        arkaPlanMuzigi.setLoop(true);
+        arkaPlanMuzigi.setVolume(40);
+        arkaPlanMuzigi.play();
+    }
+
     sf::CircleShape altintop(10.0f);
     altintop.setFillColor(sf::Color::Yellow);
 
@@ -243,6 +263,9 @@ int main()
     int skor = 0;
     int activeLevels[MAX_LEVEL][MAP_HEIGHT][MAP_WIDTH];
     std::memcpy(activeLevels, levels, sizeof(levels));
+
+    arkaPlanMuzigi.stop();
+    arkaPlanMuzigi.play();
 
     std::vector<Dusman> dusmanlar;
     std::vector<HareketliPlatform> platformlar;
@@ -415,6 +438,7 @@ int main()
                         if (karakter.sinirlar.intersects(altinSiniri)) {
                             activeLevels[mevcutlevel][y][x] = 0;
                             skor += 10;
+                            altinSesi.play();
                         }
                     } else if (blok == 3) {
                         if (karakter.sinirlar.intersects(blokSiniri)) {
@@ -426,6 +450,8 @@ int main()
                         if (karakter.sinirlar.intersects(blokSiniri)) {
                             mevcutlevel++;
 
+                            levelSesi.play();
+                                  
                             if (mevcutlevel >= MAX_LEVEL) {
                                 oyunBitti = true;
                                 oyunBittiYazisi.setString("CONGRATS");
