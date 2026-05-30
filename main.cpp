@@ -213,6 +213,19 @@ int main()
     oyuncu karakter(50.0f, 300.0f);
     sf::RectangleShape zeminsekli(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 
+    sf::Texture arkaplanDokusu;
+    sf::Sprite arkaplanSprite;
+    bool arkaplanYuklendiMi = false;
+
+    if (arkaplanDokusu.loadFromFile("background.png")) {
+        arkaplanDokusu.setRepeated(true);
+        arkaplanSprite.setTexture(arkaplanDokusu);
+        arkaplanSprite.setTextureRect(sf::IntRect(0, 0, 800, 600));
+        arkaplanYuklendiMi = true;
+    } else {
+        std::cout << "!background.png BULUNAMADI!" << std::endl;
+    }
+
     sf::CircleShape altintop(10.0f);
     altintop.setFillColor(sf::Color::Yellow);
 
@@ -459,6 +472,13 @@ int main()
         pencere.setView(kamera);
 
         pencere.clear(sf::Color(135, 206, 235));
+
+        if (arkaplanYuklendiMi) {
+            float paralaksX = kamera.getCenter().x * 0.3f;
+            arkaplanSprite.setTextureRect(sf::IntRect((int)paralaksX, 0, 800, 600));
+            arkaplanSprite.setPosition(kamera.getCenter().x - 400.0f, 0.0f);
+            pencere.draw(arkaplanSprite);
+        }
 
         for (int y = 0; y < MAP_HEIGHT; y++) {
             for (int x = 0; x < MAP_WIDTH; x++) {
